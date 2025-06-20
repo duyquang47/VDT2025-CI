@@ -10,10 +10,9 @@ spec:
   - name: kaniko
     image: gcr.io/kaniko-project/executor:latest
     command:
-      - /busybox/sh
+      - sleep
     args:
-      - -c
-      - while true; do sleep 60; done
+      - "3600"
     tty: true
     volumeMounts:
     - name: kaniko-secret
