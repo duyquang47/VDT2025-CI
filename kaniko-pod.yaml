@@ -28,6 +28,9 @@ spec:
     command: ["sleep"]
     args: ["999999"]
     tty: true
+    env:
+    - name: "HOME"
+      value: "/home/jenkins/agent"
     volumeMounts:
     - name: workspace
       mountPath: /workspace
