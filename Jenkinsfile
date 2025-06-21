@@ -84,7 +84,7 @@ pipeline {
               usernameVariable: 'GIT_USER',
               passwordVariable: 'GIT_PASS'
             )]) {
-              sh "git clone -b main https://${GIT_USER}:${GIT_PASS}@github.com/quang47/VDT2025-CD.git /workspace/config-repo"
+              sh "git clone -b main https://${GIT_USER}:${GIT_PASS}@github.com/duyquang47/VDT2025-CD.git /workspace/config-repo"
 
               dir('/workspace/config-repo') {
                 echo "Đang cập nhật image tag..."
@@ -115,7 +115,7 @@ pipeline {
       }
     }
   }
-  
+
   post {
     success {
       echo "Pipeline completed successfully! Build #${env.BUILD_NUMBER}"
