@@ -97,8 +97,6 @@ pipeline {
   post {
     success {
       echo "Pipeline completed successfully! Build #${env.BUILD_NUMBER}"
-      def gitCommit = sh(script: 'git rev-parse HEAD', returnStdout: true).trim().substring(0, 8)
-      echo "Git commit: ${gitCommit}"
     }
     failure {
       echo "Pipeline failed! Build #${env.BUILD_NUMBER}"
