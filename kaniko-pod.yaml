@@ -18,7 +18,7 @@ spec:
     volumeMounts:
     - name: kaniko-secret
       mountPath: /kaniko/.docker
-    - name: workspace
+    - name: workspace-volume
       mountPath: /workspace
 
   - name: git
@@ -28,12 +28,12 @@ spec:
     tty: true
     env:
     - name: "HOME"
-      value: "/home/jenkins/agent"
+      value: "/workspace"
     securityContext:
       runAsUser: 1000
       runAsGroup: 1000
     volumeMounts:
-    - name: workspace
+    - name: workspace-volume
       mountPath: /workspace
 
   volumes:
@@ -43,5 +43,5 @@ spec:
       items:
         - key: .dockerconfigjson
           path: config.json
-  - name: workspace
+  - name: workspace-volume
     emptyDir: {}
