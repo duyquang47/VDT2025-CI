@@ -37,7 +37,8 @@ spec:
       mountPath: /workspace
 
   - name: "jnlp"
-    image: jenkins/inbound-agent:alpine-jdk17
+    image: "jenkins/inbound-agent:latest-jdk17"
+    securityContext:
       runAsUser: 1000
       runAsGroup: 1000
     env:
