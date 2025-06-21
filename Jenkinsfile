@@ -7,7 +7,6 @@ pipeline {
 
   environment {
     DOCKERHUB_USERNAME = 'quang47'
-    DOCKER_IMAGE_NAME = 'examplevotingapp'
     GIT_CONFIG_REPO_CREDENTIALS_ID = 'github'
     GIT_CONFIG_REPO_URL = 'https://github.com/duyquang47/VDT2025-CD.git'
   }
@@ -43,38 +42,44 @@ pipeline {
       }
     }
 
-    stage('Build and Push Images with Kaniko') {
-      steps {
-        container('kaniko') {
-          script {
-            def dockerImageTag = "${DOCKER_IMAGE_NAME}:${env.GIT_COMMIT_SHORT}"
-            def services = ['vote', 'result', 'worker']
+  stage('Build and Push Images with Kaniko') {
+    steps {
+      // Step 1: Clone Git repo trước
+      container('git') {
+        sh """
+          git clone -b main https://github.com/duyquang47/VDT2025-CI.git /workspace
+        """
+      }
 
-            services.each { service ->
-              def imageName = "${DOCKERHUB_USERNAME}/examplevotingapp_${service}:${dockerImageTag}"
-              def contextDir = "/workspace/app/${service}"
+      // Step 2: Dùng Kaniko build image từ thư mục đã clone
+      container('kaniko') {
+        script {
+          def services = ['vote', 'result', 'worker']
 
-              echo "Building image ${imageName}..."
+          services.each { service ->
+            def imageName = "${DOCKERHUB_USERNAME}/examplevotingapp_${service}:${env.GIT_COMMIT_SHORT}"
+            def dockerfilePath = "/workspace/app/${service}/Dockerfile"
+            def contextPath = "/workspace"
 
-              sh """
-                /kaniko/executor \
-                  --dockerfile=${contextDir}/Dockerfile \
-                  --context=${contextDir} \
-                  --destination=${imageName} \
-                  --verbosity=info
-              """
-            }
+            echo "Building image ${imageName} from ${dockerfilePath}"
+
+            sh """
+              /kaniko/executor \
+                --dockerfile=${dockerfilePath} \
+                --context=${contextPath} \
+                --destination=${imageName} \
+                --verbosity=info
+            """
           }
         }
       }
     }
+  }
 
     stage('Update K8s Manifests') {
       steps {
         container('git') {
           script {
-            def dockerImageTag = "${DOCKER_IMAGE_NAME}:${env.GIT_COMMIT_SHORT}"
-            
             dir('k8s-specifications') {
               echo "Cloning manifest repo..."
               withCredentials([usernamePassword(
@@ -83,17 +88,17 @@ pipeline {
                 passwordVariable: 'GIT_PASS'
               )]) {
                 // Clone repo CD-VDT từ nhánh main vào thư mục cd-vdt-repo
-                sh "git clone -b main https://${GIT_USER}:${GIT_PASS}@github.com/quang47/VDT2025-CI.git cd-vdt-repo"
+                sh "git clone -b main https://${GIT_USER}:${GIT_PASS}@github.com/quang47/VDT2025-CD.git cd-vdt-repo"
                 
                 // Di chuyển vào thư mục repo vừa clone
                 dir('cd-vdt-repo') {
-                  echo "Đang cập nhật image tag trong deployment files thành ${dockerImageTag}"
+                  echo "Đang cập nhật image tag trong deployment files thành ${env.GIT_COMMIT_SHORT}"
                   
                   // Cập nhật file deployment.yaml trong thư mục app
                   def services = ['vote', 'result', 'worker']
                   services.each { service ->
                     def deploymentFile = "k8s-specifications/${service}-deployment.yaml"
-                    def imageName = "${DOCKERHUB_USERNAME}/examplevotingapp_${service}:${dockerImageTag}"
+                    def imageName = "${DOCKERHUB_USERNAME}/examplevotingapp_${service}:${env.GIT_COMMIT_SHORT}"
 
                     echo "Updating ${deploymentFile} with image ${imageName}..."
                     sh "sed -i 's|image: .*|image: ${imageName}|g' ${deploymentFile}"
