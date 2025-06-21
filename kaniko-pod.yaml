@@ -1,3 +1,4 @@
+
 apiVersion: v1
 kind: Pod
 metadata:
@@ -7,16 +8,6 @@ metadata:
   namespace: jenkins
 spec:
   containers:
-  - name: jnlp
-    image: jenkins/inbound-agent:alpine-jdk17
-    args: ['\$(JENKINS_SECRET)', '\$(JENKINS_NAME)']
-    workingDir: /home/jenkins/agent
-    volumeMounts:
-    - name: workspace
-      mountPath: /home/jenkins/agent
-    - name: workspace
-      mountPath: /workspace
-
   - name: kaniko
     image: gcr.io/kaniko-project/executor:debug
     command: ["sleep"]
@@ -26,8 +17,6 @@ spec:
     - name: kaniko-secret
       mountPath: /kaniko/.docker
     - name: workspace
-      mountPath: /home/jenkins/agent
-    - name: workspace
       mountPath: /workspace
 
   - name: git
@@ -36,18 +25,6 @@ spec:
     args: ["999999"]
     tty: true
     volumeMounts:
-    - name: workspace
-      mountPath: /home/jenkins/agent
-    - name: workspace
-      mountPath: /workspace
-
-  - name: jnlp
-    image: jenkins/inbound-agent:alpine-jdk17
-    args: ['\$(JENKINS_SECRET)', '\$(JENKINS_NAME)']
-    workingDir: /home/jenkins/agent
-    volumeMounts:
-    - name: workspace
-      mountPath: /home/jenkins/agent
     - name: workspace
       mountPath: /workspace
 
