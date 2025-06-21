@@ -10,9 +10,10 @@
 # build compiles the program for the builder's local platform
 FROM --platform=${BUILDPLATFORM} mcr.microsoft.com/dotnet/sdk:7.0 AS build
 ARG TARGETPLATFORM
-ARG TARGETARCH=amd64
+ARG TARGETARCH=amd64  
 ARG BUILDPLATFORM
 RUN echo "I am running on $BUILDPLATFORM, building for $TARGETPLATFORM"
+#not use
 
 WORKDIR /source
 COPY *.csproj .
