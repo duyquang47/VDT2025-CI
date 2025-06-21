@@ -7,9 +7,7 @@ metadata:
     app: kaniko
   namespace: jenkins
 spec:
-  securityContext:
-    runAsUser: 1000      
-    runAsGroup: 1000     
+  securityContext:    
     fsGroup: 1000 
   containers:
   - name: kaniko
@@ -31,6 +29,9 @@ spec:
     env:
     - name: "HOME"
       value: "/home/jenkins/agent"
+    securityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
     volumeMounts:
     - name: workspace
       mountPath: /workspace
