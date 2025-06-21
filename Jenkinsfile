@@ -109,7 +109,7 @@ pipeline {
 
                 sh "git config user.email 'jenkins@example.com'"
                 sh "git config user.name 'Jenkins CI'"
-                sh "git diff --quiet || git commit -m 'ci: Cập nhật image tag lên ${env.GIT_COMMIT_SHORT}'"
+                sh "git diff --quiet || git commit -m 'Update image tag: ${env.GIT_COMMIT_SHORT}'"
                 sh "git push origin main"
               }
             }
