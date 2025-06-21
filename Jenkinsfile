@@ -7,7 +7,8 @@ pipeline {
 
   environment {
     DOCKERHUB_USERNAME = 'quang47'
-    MANIFEST_REPO_URL = 'https://github.com/duyquang47/VDT2025-CD.git'
+    GIT_CONFIG_REPO_CREDENTIALS_ID = 'github'
+    GIT_CONFIG_REPO_URL = 'https://github.com/duyquang47/VDT2025-CD.git'
   }
 
   stages {
@@ -22,11 +23,12 @@ pipeline {
       steps {
         container('kaniko') {
           script {
+            def gitCommit = sh(script: 'git rev-parse HEAD', returnStdout: true).trim().substring(0, 8)
+            def dockerImageTag = "${DOCKER_IMAGE_NAME}:${gitCommit}"
             def services = ['vote', 'result', 'worker']
-            def imageTag = env.BUILD_NUMBER
 
             services.each { service ->
-              def imageName = "${DOCKERHUB_USERNAME}/examplevotingapp_${service}:${imageTag}"
+              def imageName = "${DOCKERHUB_USERNAME}/examplevotingapp_${service}:${dockerImageTag}"
               def contextDir = "/workspace/app/${service}"
 
               echo "Building image ${imageName}..."
@@ -44,33 +46,49 @@ pipeline {
       }
     }
 
-    stage('Update K8s Manifests') {
+    stage('Update Helm Values with New Images') {
       steps {
         script {
-          def imageTag = env.BUILD_NUMBER
-
-          dir('manifest-repo') {
+          def gitCommit = sh(script: 'git rev-parse HEAD', returnStdout: true).trim().substring(0, 8)
+          def dockerImageTag = "${DOCKER_IMAGE_NAME}:${gitCommit}"
+          def services = ['vote', 'result', 'worker']
+          dir('k8s-specifications') {
             echo "Cloning manifest repo..."
-            git url: MANIFEST_REPO_URL, branch: 'main'
+            withCredentials([usernamePassword(
+              credentialsId: GIT_CONFIG_REPO_CREDENTIALS_ID,
+              variable: 'GIT_USER',
+              passwordVariable: 'GIT_PASS'
+              )]) {
+              // Clone repo CD-VDT từ nhánh main vào thư mục cd-vdt-repo
+              sh "git clone -b main https://${GIT_USER}:${GIT_PASS}@github.com/quang47/VDT2025-CI.git cd-vdt-repo"
+              // Di chuyển vào thư mục repo vừa clone
+              dir('cd-vdt-repo') {
+                  echo "Đang cập nhật image tag trong app/deployment.yaml thành ${dockerImageTag}"
+                  // Cập nhật file deployment.yaml trong thư mục app
+                  def services = ['vote', 'result', 'worker']
+                  services.each { service ->
+                  def deploymentFile = "k8s-specifications/${service}-deployment.yaml"
+                  def imageName = "${DOCKERHUB_USERNAME}/examplevotingapp_${service}:${imageTag}"
 
-            def services = ['vote', 'result', 'worker']
-            services.each { service ->
-              def deploymentFile = "k8s-specifications/${service}-deployment.yaml"
-              def imageName = "${DOCKERHUB_USERNAME}/examplevotingapp_${service}:${imageTag}"
+                  echo "Updating ${deploymentFile} with image ${imageName}..."
+                  sh "sed -i 's|image: .*|image: ${imageName}|g' ${deploymentFile}"
 
-              echo "Updating ${deploymentFile} with image ${imageName}..."
-              sh "sed -i 's|image: .*|image: ${imageName}|g' ${deploymentFile}"
+                  sh "git add ${deploymentFile}"
+                  }
+                  // Cấu hình git user
+                  sh "git config user.email 'jenkins@example.com'"
+                  sh "git config user.name 'Jenkins CI'"
+
+                  // Thêm file đã sửa đổi vào staging
+                  sh "git commit -m 'ci: Cập nhật image tag lên ${gitCommit}'"
+                  // Đẩy thay đổi lên nhánh main của repo
+                  sh "git push origin main"
+              }
             }
-
-            sh 'git config user.name "Jenkins CI"'
-            sh 'git config user.email "jenkins@example.com"'
-            sh "git commit -am 'Deploy build #${imageTag}'"
-            sh 'git push origin main'
           }
         }
       }
     }
-  }
 
   post {
     always {
@@ -78,4 +96,4 @@ pipeline {
       cleanWs()
     }
   }
-}
+  }
