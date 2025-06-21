@@ -17,9 +17,21 @@ spec:
     volumeMounts:
     - name: kaniko-secret
       mountPath: /kaniko/.docker
+  - name: git
+    image: alpine/git:latest
+    command:
+      - sleep
+    args:
+      - "999999"
+    tty: true
+    volumeMounts:
+    - name: workspace
+      mountPath: /workspace
   volumes:
   - name: kaniko-secret
     secret:
       secretName: dockerhub-secret
+  - name: workspace
+    emptyDir: {}
 
 # test1234
