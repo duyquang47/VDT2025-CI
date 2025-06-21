@@ -57,7 +57,7 @@ pipeline {
           def services = ['vote', 'result', 'worker']
 
           services.each { service ->
-            def imageName = "${DOCKERHUB_USERNAME}/examplevotingapp_${service}:${env.GIT_COMMIT_SHORT}"
+            def imageName = "${DOCKERHUB_USERNAME}/example-voting-app_${service}:${env.GIT_COMMIT_SHORT}"
             def dockerfilePath = "/workspace/app/${service}/Dockerfile"
             def contextPath = "/workspace"
 
@@ -98,7 +98,7 @@ pipeline {
                   def services = ['vote', 'result', 'worker']
                   services.each { service ->
                     def deploymentFile = "k8s-specifications/${service}-deployment.yaml"
-                    def imageName = "${DOCKERHUB_USERNAME}/examplevotingapp_${service}:${env.GIT_COMMIT_SHORT}"
+                    def imageName = "${DOCKERHUB_USERNAME}/example-voting-app_${service}:${env.GIT_COMMIT_SHORT}"
 
                     echo "Updating ${deploymentFile} with image ${imageName}..."
                     sh "sed -i 's|image: .*|image: ${imageName}|g' ${deploymentFile}"
