@@ -18,29 +18,30 @@ pipeline {
         checkout scm
       }
     }
+  }
 
-    stage('Get Git Commit') {
-      steps {
-        container('git') {
-          script {
-            // Get the current workspace path
-            def workspacePath = sh(script: 'pwd', returnStdout: true).trim()
-            echo "Current workspace: ${workspacePath}"
-            
-            // Configure git to handle ownership issues
-            sh "git config --global --add safe.directory '${workspacePath}'"
-            sh 'git config --global user.email "jenkins@example.com"'
-            sh 'git config --global user.name "Jenkins CI"'
-            
-            // Alternative: disable ownership check
-            sh 'git config --global safe.directory "*"'
-            
-            env.GIT_COMMIT_SHORT = sh(script: 'git rev-parse HEAD', returnStdout: true).trim().substring(0, 8)
-            echo "Git commit: ${env.GIT_COMMIT_SHORT}"
-          }
+  stage('Get Git Commit') {
+    steps {
+      container('git') {
+        script {
+          // Get the current workspace path
+          def workspacePath = sh(script: 'pwd', returnStdout: true).trim()
+          echo "Current workspace: ${workspacePath}"
+          
+          // Configure git to handle ownership issues
+          sh "git config --global --add safe.directory '${workspacePath}'"
+          sh 'git config --global user.email "jenkins@example.com"'
+          sh 'git config --global user.name "Jenkins CI"'
+          
+          // Alternative: disable ownership check
+          sh 'git config --global safe.directory "*"'
+          
+          env.GIT_COMMIT_SHORT = sh(script: 'git rev-parse HEAD', returnStdout: true).trim().substring(0, 8)
+          echo "Git commit: ${env.GIT_COMMIT_SHORT}"
         }
       }
     }
+  }
 
   stage('Build and Push Images with Kaniko') {
     steps {
@@ -96,9 +97,10 @@ pipeline {
 
                 echo "Updating ${service} with image ${imageName}..."
 
-                sh """sed -i '/^${service}:$/,/^[^[:space:]]/s|image: .*|image: ${imageName}|' ${valueFile}"""
                 def imageTag = "${env.GIT_COMMIT_SHORT}"
-                sh """sed -i '/^${service}:$/,/^[^[:space:]]/s|tag: .*|tag: ${imageTag}|' ${valueFile}"""
+
+                sh "sed -i \"/^${service}:\$/,/^[^[:space:]]/s|image: .*|image: ${imageName}|\" ${valueFile}"
+                sh "sed -i \"/^${service}:\$/,/^[^[:space:]]/s|tag: .*|tag: ${imageTag}|\" ${valueFile}"
 
                 sh "git add ${valueFile}"
               }
