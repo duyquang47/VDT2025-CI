@@ -1,10 +1,12 @@
 pipeline {
+  // def services = ['vote', 'result', 'worker']
+  def services = ['result']
   agent {
     kubernetes {
       yamlFile 'kaniko-pod.yaml'
     }
   }
-
+  
   environment {
     DOCKERHUB_USERNAME = 'quang47'
     GIT_CONFIG_REPO_CREDENTIALS_ID = 'github'
@@ -52,7 +54,6 @@ pipeline {
         // Step 2: Dùng Kaniko build image từ thư mục đã clone
         container('kaniko') {
           script {
-            def services = ['vote', 'result', 'worker']
 
             services.each { service ->
               def imageName = "${DOCKERHUB_USERNAME}/example-voting-app_${service}:${env.GIT_COMMIT_SHORT}"
@@ -89,7 +90,6 @@ pipeline {
               dir('/workspace/config-repo') {
                 echo "Đang cập nhật image tag..."
 
-                def services = ['vote', 'result', 'worker']
                 services.each { service ->
                   def valueFile = "helm/values.yaml"
                   def imageName = "${DOCKERHUB_USERNAME}/example-voting-app_${service}:${env.GIT_COMMIT_SHORT}"
@@ -107,7 +107,7 @@ pipeline {
                 sh "git config user.email 'jenkins@example.com'"
                 sh "git config user.name 'Jenkins CI'"
                 sh "git diff --quiet || git commit -m 'ci: Cập nhật image tag lên ${env.GIT_COMMIT_SHORT}'"
-                sh "git push origin main"
+                sh "git push https://${GIT_USER}:${GIT_PASS}@github.com/duyquang47/VD2025-CD.git HEAD:main"
               }
             }
           }
@@ -125,7 +125,7 @@ pipeline {
       echo "Pipeline failed! Build #${env.BUILD_NUMBER}"
     }
     always {
-      echo 'Pipeline finished.'
+      echo 'Clean workspaces.'
       cleanWs()
     }
   }
