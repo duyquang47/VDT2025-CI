@@ -59,7 +59,7 @@ pipeline {
           services.each { service ->
             def imageName = "${DOCKERHUB_USERNAME}/example-voting-app_${service}:${env.GIT_COMMIT_SHORT}"
             def dockerfilePath = "/workspace/app/${service}/Dockerfile"
-            def contextPath = "/workspace"
+            def contextPath = "/workspace/app/${service}"
 
             echo "Building image ${imageName} from ${dockerfilePath}"
 
