@@ -101,8 +101,8 @@ pipeline {
 
                   def imageTag = "${env.GIT_COMMIT_SHORT}"
 
-                  sh "sed -i \"/^${service}:\$/,/^[^[:space:]]/s@image: .*@image: ${imageName}@\" ${valueFile}"
-                  sh "sed -i \"/^${service}:\$/,/^[^[:space:]]/s@tag: .*@tag: ${imageTag}@\" ${valueFile}"
+                  sh "sed -i 's|^vote-image:.*|vote-image: ${imageName}|' ${valueFile}"
+                  sh "sed -i 's|^vote-tag:.*|vote-tag: ${imageTag}|' ${valueFile}"
 
                   sh "git add ${valueFile}"
                 }
