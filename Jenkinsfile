@@ -7,7 +7,7 @@ pipeline {
 
   environment {
     DOCKERHUB_USERNAME = 'quang47'
-    GIT_CONFIG_REPO_CREDENTIALS_ID = 'github'
+    GIT_CONFIG_REPO_CREDENTIALS_ID = 'github-cd'
     GIT_CONFIG_REPO_URL = 'https://github.com/duyquang47/VDT2025-CD.git'
   }
 
