@@ -110,7 +110,7 @@ pipeline {
                 sh "git config user.email 'jenkins@example.com'"
                 sh "git config user.name 'Jenkins CI'"
                 sh "git diff --quiet || git commit -m 'ci: Cập nhật image tag lên ${env.GIT_COMMIT_SHORT}'"
-                sh "git push https://${GIT_USER}:${GIT_PASS}@github.com/duyquang47/VDT2025-CD.git HEAD:main"
+                sh "git push origin main"
               }
             }
           }
