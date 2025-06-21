@@ -24,6 +24,18 @@ pipeline {
       steps {
         container('git') {
           script {
+            // Get the current workspace path
+            def workspacePath = sh(script: 'pwd', returnStdout: true).trim()
+            echo "Current workspace: ${workspacePath}"
+            
+            // Configure git to handle ownership issues
+            sh "git config --global --add safe.directory '${workspacePath}'"
+            sh 'git config --global user.email "jenkins@example.com"'
+            sh 'git config --global user.name "Jenkins CI"'
+            
+            // Alternative: disable ownership check
+            sh 'git config --global safe.directory "*"'
+            
             env.GIT_COMMIT_SHORT = sh(script: 'git rev-parse HEAD', returnStdout: true).trim().substring(0, 8)
             echo "Git commit: ${env.GIT_COMMIT_SHORT}"
           }

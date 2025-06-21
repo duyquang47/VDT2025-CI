@@ -17,6 +17,8 @@ spec:
     volumeMounts:
     - name: kaniko-secret
       mountPath: /kaniko/.docker
+    - name: workspace
+      mountPath: /workspace
   - name: git
     image: alpine/git:latest
     command:
