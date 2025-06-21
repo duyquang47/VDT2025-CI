@@ -38,8 +38,12 @@ spec:
 
   - name: "jnlp"
     image: jenkins/inbound-agent:alpine-jdk11
-    args: ['\$(JENKINS_SECRET)', '\$(JENKINS_NAME)']
-    workingDir: /home/jenkins/agent
+    securityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+    env:
+    - name: "JENKINS_AGENT_WORKDIR"
+      value: "/workspace"
     volumeMounts:
     - name: "workspace-volume"
       mountPath: "/workspace" 
