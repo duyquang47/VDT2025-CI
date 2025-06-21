@@ -98,8 +98,8 @@ pipeline {
 
                   def imageTag = "${env.GIT_COMMIT_SHORT}"
 
-                  sh "sed -i \"/^${service}:\$/,/^[^[:space:]]/s|image: .*|image: ${imageName}|\" ${valueFile}"
-                  sh "sed -i \"/^${service}:\$/,/^[^[:space:]]/s|tag: .*|tag: ${imageTag}|\" ${valueFile}"
+                  sh "sed -i \"/^${service}:\$/,/^[^[:space:]]/s@image: .*@image: ${imageName}@\" ${valueFile}"
+                  sh "sed -i \"/^${service}:\$/,/^[^[:space:]]/s@tag: .*@tag: ${imageTag}@\" ${valueFile}"
 
                   sh "git add ${valueFile}"
                 }

@@ -27,6 +27,14 @@ spec:
     - name: workspace
       mountPath: /workspace
 
+  - name: jnlp
+    image: jenkins/inbound-agent:alpine-jdk11
+    args: ['\$(JENKINS_SECRET)', '\$(JENKINS_NAME)']
+    workingDir: /home/jenkins/agent
+    volumeMounts:
+    - name: workspace
+      mountPath: /home/jenkins/agent
+
   volumes:
   - name: kaniko-secret
     secret:
