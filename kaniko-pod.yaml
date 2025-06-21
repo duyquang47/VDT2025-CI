@@ -9,31 +9,30 @@ spec:
   containers:
   - name: kaniko
     image: gcr.io/kaniko-project/executor:debug
-    command:
-      - sleep
-    args:
-      - "999999"
+    command: ["sleep"]
+    args: ["999999"]
     tty: true
     volumeMounts:
     - name: kaniko-secret
       mountPath: /kaniko/.docker
     - name: workspace
       mountPath: /workspace
+
   - name: git
     image: alpine/git:latest
-    command:
-      - sleep
-    args:
-      - "999999"
+    command: ["sleep"]
+    args: ["999999"]
     tty: true
     volumeMounts:
     - name: workspace
       mountPath: /workspace
+
   volumes:
   - name: kaniko-secret
     secret:
       secretName: dockerhub-secret
+      items:
+        - key: .dockerconfigjson
+          path: config.json
   - name: workspace
     emptyDir: {}
-
-# test1234
