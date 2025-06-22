@@ -1,0 +1,764 @@
+Started by GitHub push by duyquang47
+Obtained Jenkinsfile from git https://github.com/duyquang47/VDT2025-CI.git
+[Pipeline] Start of Pipeline
+[Pipeline] readTrusted
+Obtained kaniko-pod.yaml from git https://github.com/duyquang47/VDT2025-CI.git
+[Pipeline] podTemplate
+[Pipeline] {
+[Pipeline] node
+Created Pod: kubernetes jenkins/ci-pipeline-67-4d0pb-33l7j-fm1c7
+[PodInfo] jenkins/ci-pipeline-67-4d0pb-33l7j-fm1c7
+	Container [git] waiting [ContainerCreating] No message
+	Container [jnlp] waiting [ContainerCreating] No message
+	Container [kaniko] waiting [ContainerCreating] No message
+	Container [yq] waiting [ContainerCreating] No message
+	Pod [Pending][ContainersNotReady] containers with unready status: [kaniko git jnlp yq]
+[PodInfo] jenkins/ci-pipeline-67-4d0pb-33l7j-fm1c7
+	Container [git] waiting [ContainerCreating] No message
+	Container [jnlp] waiting [ContainerCreating] No message
+	Container [kaniko] waiting [ContainerCreating] No message
+	Container [yq] waiting [ContainerCreating] No message
+	Pod [Pending][ContainersNotReady] containers with unready status: [kaniko git jnlp yq]
+Still waiting to schedule task
+‘ci-pipeline-67-4d0pb-33l7j-fm1c7’ is offline
+Agent ci-pipeline-67-4d0pb-33l7j-fm1c7 is provisioned from template CI_pipeline_67-4d0pb-33l7j
+---
+apiVersion: "v1"
+kind: "Pod"
+metadata:
+  annotations:
+    kubernetes.jenkins.io/last-refresh: "1750606625745"
+    buildUrl: "http://jenkins.jenkins.svc.cluster.local:8080/job/CI%20pipeline/67/"
+    runUrl: "job/CI%20pipeline/67/"
+  labels:
+    app: "kaniko"
+    jenkins/jenkins-jenkins-agent: "true"
+    jenkins/label-digest: "8bacf50de0db0cb0bf14763ec066d612122c3b21"
+    jenkins/label: "CI_pipeline_67-4d0pb"
+    kubernetes.jenkins.io/controller: "http___jenkins_jenkins_svc_cluster_local_8080x"
+  name: "ci-pipeline-67-4d0pb-33l7j-fm1c7"
+  namespace: "jenkins"
+spec:
+  containers:
+  - args:
+    - "999999"
+    command:
+    - "sleep"
+    image: "gcr.io/kaniko-project/executor:debug"
+    name: "kaniko"
+    tty: true
+    volumeMounts:
+    - mountPath: "/kaniko/.docker"
+      name: "kaniko-secret"
+    - mountPath: "/workspace"
+      name: "workspace-volume"
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  - args:
+    - "999999"
+    command:
+    - "sleep"
+    env:
+    - name: "HOME"
+      value: "/workspace"
+    image: "alpine/git:latest"
+    name: "git"
+    securityContext:
+      runAsGroup: 1000
+      runAsUser: 1000
+    tty: true
+    volumeMounts:
+    - mountPath: "/workspace"
+      name: "workspace-volume"
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  - env:
+    - name: "JENKINS_SECRET"
+      value: "********"
+    - name: "JENKINS_TUNNEL"
+      value: "jenkins-agent.jenkins.svc.cluster.local:50000"
+    - name: "JENKINS_AGENT_NAME"
+      value: "ci-pipeline-67-4d0pb-33l7j-fm1c7"
+    - name: "REMOTING_OPTS"
+      value: "-noReconnectAfter 1d"
+    - name: "JENKINS_NAME"
+      value: "ci-pipeline-67-4d0pb-33l7j-fm1c7"
+    - name: "JENKINS_AGENT_WORKDIR"
+      value: "/workspace"
+    - name: "JENKINS_URL"
+      value: "http://jenkins.jenkins.svc.cluster.local:8080/"
+    image: "jenkins/inbound-agent:latest-jdk17"
+    name: "jnlp"
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "100m"
+    securityContext:
+      runAsGroup: 1000
+      runAsUser: 1000
+    volumeMounts:
+    - mountPath: "/workspace"
+      name: "workspace-volume"
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  - args:
+    - "999999"
+    command:
+    - "sleep"
+    image: "mikefarah/yq:4.43.1"
+    name: "yq"
+    securityContext:
+      runAsGroup: 1000
+      runAsUser: 1000
+    volumeMounts:
+    - mountPath: "/workspace"
+      name: "workspace-volume"
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  nodeSelector:
+    kubernetes.io/os: "linux"
+  restartPolicy: "Never"
+  securityContext:
+    fsGroup: 1000
+  volumes:
+  - name: "kaniko-secret"
+    secret:
+      items:
+      - key: ".dockerconfigjson"
+        path: "config.json"
+      secretName: "dockerhub-secret"
+  - emptyDir:
+      medium: ""
+    name: "workspace-volume"
+
+Running on ci-pipeline-67-4d0pb-33l7j-fm1c7 in /home/jenkins/agent/workspace/CI pipeline
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Checkout SCM)
+[Pipeline] checkout
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+using credential github
+Cloning the remote Git repository
+Cloning repository https://github.com/duyquang47/VDT2025-CI.git
+ > git init /home/jenkins/agent/workspace/CI pipeline # timeout=10
+Fetching upstream changes from https://github.com/duyquang47/VDT2025-CI.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.39.5'
+using GIT_ASKPASS to set credentials github
+ > git fetch --tags --force --progress -- https://github.com/duyquang47/VDT2025-CI.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git config remote.origin.url https://github.com/duyquang47/VDT2025-CI.git # timeout=10
+ > git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/* # timeout=10
+Avoid second fetch
+Checking out Revision 07b8b97ac27282e1ac062994ce9251b7fd632f5d (refs/remotes/origin/main)
+Commit message: "Update"
+ > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 07b8b97ac27282e1ac062994ce9251b7fd632f5d # timeout=10
+ > git rev-list --no-walk b078793e649554bdf36a79248778fbc58c4da56a # timeout=10
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Checkout Source Code)
+[Pipeline] echo
+Checking out source code...
+[Pipeline] checkout
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+using credential github
+Fetching changes from the remote Git repository
+ > git rev-parse --resolve-git-dir /home/jenkins/agent/workspace/CI pipeline/.git # timeout=10
+ > git config remote.origin.url https://github.com/duyquang47/VDT2025-CI.git # timeout=10
+Fetching upstream changes from https://github.com/duyquang47/VDT2025-CI.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.39.5'
+using GIT_ASKPASS to set credentials github
+ > git fetch --tags --force --progress -- https://github.com/duyquang47/VDT2025-CI.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+Checking out Revision 07b8b97ac27282e1ac062994ce9251b7fd632f5d (refs/remotes/origin/main)
+Commit message: "Update"
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Get Git Commit)
+[Pipeline] container
+[Pipeline] {
+[Pipeline] script
+[Pipeline] {
+[Pipeline] sh
+ > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 07b8b97ac27282e1ac062994ce9251b7fd632f5d # timeout=10
++ pwd
+[Pipeline] echo
+Current workspace: /home/jenkins/agent/workspace/CI pipeline
+[Pipeline] sh
++ git config --global --add safe.directory '/home/jenkins/agent/workspace/CI pipeline'
+[Pipeline] sh
++ git config --global user.email jenkins@example.com
+[Pipeline] sh
++ git config --global user.name 'Jenkins CI'
+[Pipeline] sh
++ git config --global safe.directory '*'
+[Pipeline] sh
++ git rev-parse HEAD
+[Pipeline] echo
+Git commit: 07b8b97a
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // container
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Build and Push Images with Kaniko)
+[Pipeline] container
+[Pipeline] {
+[Pipeline] sh
++ git clone -b main https://github.com/duyquang47/VDT2025-CI.git /workspace/source-repo
+Cloning into '/workspace/source-repo'...
+[Pipeline] }
+[Pipeline] // container
+[Pipeline] container
+[Pipeline] {
+[Pipeline] script
+[Pipeline] {
+[Pipeline] echo
+Building image quang47/example-voting-app_vote:07b8b97a from /workspace/source-repo/app/vote/Dockerfile
+[Pipeline] sh
++ /kaniko/executor '--dockerfile=/workspace/source-repo/app/vote/Dockerfile' '--context=/workspace/source-repo/app/vote' '--destination=quang47/example-voting-app_vote:07b8b97a' '--verbosity=info'
+[36mINFO[0m[0003] Resolved base name python:3.11-slim to base  
+[36mINFO[0m[0003] Resolved base name base to dev               
+[36mINFO[0m[0003] Resolved base name base to final             
+[36mINFO[0m[0003] Retrieving image manifest python:3.11-slim   
+[36mINFO[0m[0003] Retrieving image python:3.11-slim from registry index.docker.io 
+[36mINFO[0m[0007] Built cross stage deps: map[]                
+[36mINFO[0m[0007] Retrieving image manifest python:3.11-slim   
+[36mINFO[0m[0007] Returning cached image manifest              
+[36mINFO[0m[0007] Executing 0 build triggers                   
+[36mINFO[0m[0007] Building stage 'python:3.11-slim' [idx: '0', base-idx: '-1'] 
+[36mINFO[0m[0007] Unpacking rootfs as cmd RUN apt-get update &&     apt-get install -y --no-install-recommends curl &&     rm -rf /var/lib/apt/lists/* requires it. 
+[36mINFO[0m[0023] RUN apt-get update &&     apt-get install -y --no-install-recommends curl &&     rm -rf /var/lib/apt/lists/* 
+[36mINFO[0m[0023] Initializing snapshotter ...                 
+[36mINFO[0m[0023] Taking snapshot of full filesystem...        
+[36mINFO[0m[0024] Cmd: /bin/sh                                 
+[36mINFO[0m[0024] Args: [-c apt-get update &&     apt-get install -y --no-install-recommends curl &&     rm -rf /var/lib/apt/lists/*] 
+[36mINFO[0m[0024] Running: [/bin/sh -c apt-get update &&     apt-get install -y --no-install-recommends curl &&     rm -rf /var/lib/apt/lists/*] 
+Get:1 http://deb.debian.org/debian bookworm InRelease [151 kB]
+Get:2 http://deb.debian.org/debian bookworm-updates InRelease [55.4 kB]
+Get:3 http://deb.debian.org/debian-security bookworm-security InRelease [48.0 kB]
+Get:4 http://deb.debian.org/debian bookworm/main amd64 Packages [8793 kB]
+Get:5 http://deb.debian.org/debian bookworm-updates/main amd64 Packages [756 B]
+Get:6 http://deb.debian.org/debian-security bookworm-security/main amd64 Packages [268 kB]
+Fetched 9316 kB in 12s (788 kB/s)
+Reading package lists...
+Reading package lists...
+Building dependency tree...
+Reading state information...
+The following additional packages will be installed:
+  libbrotli1 libcurl4 libldap-2.5-0 libnghttp2-14 libpsl5 librtmp1 libsasl2-2
+  libsasl2-modules-db libssh2-1
+Recommended packages:
+  libldap-common publicsuffix libsasl2-modules
+The following NEW packages will be installed:
+  curl libbrotli1 libcurl4 libldap-2.5-0 libnghttp2-14 libpsl5 librtmp1
+  libsasl2-2 libsasl2-modules-db libssh2-1
+0 upgraded, 10 newly installed, 0 to remove and 1 not upgraded.
+Need to get 1617 kB of archives.
+After this operation, 3817 kB of additional disk space will be used.
+Get:1 http://deb.debian.org/debian bookworm/main amd64 libbrotli1 amd64 1.0.9-2+b6 [275 kB]
+Get:2 http://deb.debian.org/debian bookworm/main amd64 libsasl2-modules-db amd64 2.1.28+dfsg-10 [20.3 kB]
+Get:3 http://deb.debian.org/debian bookworm/main amd64 libsasl2-2 amd64 2.1.28+dfsg-10 [59.7 kB]
+Get:4 http://deb.debian.org/debian bookworm/main amd64 libldap-2.5-0 amd64 2.5.13+dfsg-5 [183 kB]
+Get:5 http://deb.debian.org/debian bookworm/main amd64 libnghttp2-14 amd64 1.52.0-1+deb12u2 [73.0 kB]
+Get:6 http://deb.debian.org/debian bookworm/main amd64 libpsl5 amd64 0.21.2-1 [58.7 kB]
+Get:7 http://deb.debian.org/debian bookworm/main amd64 librtmp1 amd64 2.4+20151223.gitfa8646d.1-2+b2 [60.8 kB]
+Get:8 http://deb.debian.org/debian bookworm/main amd64 libssh2-1 amd64 1.10.0-3+b1 [179 kB]
+Get:9 http://deb.debian.org/debian bookworm/main amd64 libcurl4 amd64 7.88.1-10+deb12u12 [391 kB]
+Get:10 http://deb.debian.org/debian bookworm/main amd64 curl amd64 7.88.1-10+deb12u12 [315 kB]
+debconf: delaying package configuration, since apt-utils is not installed
+Fetched 1617 kB in 1s (1427 kB/s)
+Selecting previously unselected package libbrotli1:amd64.
+(Reading database ... 
+(Reading database ... 5%
+(Reading database ... 10%
+(Reading database ... 15%
+(Reading database ... 20%
+(Reading database ... 25%
+(Reading database ... 30%
+(Reading database ... 35%
+(Reading database ... 40%
+(Reading database ... 45%
+(Reading database ... 50%
+(Reading database ... 55%
+(Reading database ... 60%
+(Reading database ... 65%
+(Reading database ... 70%
+(Reading database ... 75%
+(Reading database ... 80%
+(Reading database ... 85%
+(Reading database ... 90%
+(Reading database ... 95%
+(Reading database ... 100%
+(Reading database ... 6686 files and directories currently installed.)
+Preparing to unpack .../0-libbrotli1_1.0.9-2+b6_amd64.deb ...
+Unpacking libbrotli1:amd64 (1.0.9-2+b6) ...
+Selecting previously unselected package libsasl2-modules-db:amd64.
+Preparing to unpack .../1-libsasl2-modules-db_2.1.28+dfsg-10_amd64.deb ...
+Unpacking libsasl2-modules-db:amd64 (2.1.28+dfsg-10) ...
+Selecting previously unselected package libsasl2-2:amd64.
+Preparing to unpack .../2-libsasl2-2_2.1.28+dfsg-10_amd64.deb ...
+Unpacking libsasl2-2:amd64 (2.1.28+dfsg-10) ...
+Selecting previously unselected package libldap-2.5-0:amd64.
+Preparing to unpack .../3-libldap-2.5-0_2.5.13+dfsg-5_amd64.deb ...
+Unpacking libldap-2.5-0:amd64 (2.5.13+dfsg-5) ...
+Selecting previously unselected package libnghttp2-14:amd64.
+Preparing to unpack .../4-libnghttp2-14_1.52.0-1+deb12u2_amd64.deb ...
+Unpacking libnghttp2-14:amd64 (1.52.0-1+deb12u2) ...
+Selecting previously unselected package libpsl5:amd64.
+Preparing to unpack .../5-libpsl5_0.21.2-1_amd64.deb ...
+Unpacking libpsl5:amd64 (0.21.2-1) ...
+Selecting previously unselected package librtmp1:amd64.
+Preparing to unpack .../6-librtmp1_2.4+20151223.gitfa8646d.1-2+b2_amd64.deb ...
+Unpacking librtmp1:amd64 (2.4+20151223.gitfa8646d.1-2+b2) ...
+Selecting previously unselected package libssh2-1:amd64.
+Preparing to unpack .../7-libssh2-1_1.10.0-3+b1_amd64.deb ...
+Unpacking libssh2-1:amd64 (1.10.0-3+b1) ...
+Selecting previously unselected package libcurl4:amd64.
+Preparing to unpack .../8-libcurl4_7.88.1-10+deb12u12_amd64.deb ...
+Unpacking libcurl4:amd64 (7.88.1-10+deb12u12) ...
+Selecting previously unselected package curl.
+Preparing to unpack .../9-curl_7.88.1-10+deb12u12_amd64.deb ...
+Unpacking curl (7.88.1-10+deb12u12) ...
+Setting up libpsl5:amd64 (0.21.2-1) ...
+Setting up libbrotli1:amd64 (1.0.9-2+b6) ...
+Setting up libnghttp2-14:amd64 (1.52.0-1+deb12u2) ...
+Setting up libsasl2-modules-db:amd64 (2.1.28+dfsg-10) ...
+Setting up librtmp1:amd64 (2.4+20151223.gitfa8646d.1-2+b2) ...
+Setting up libsasl2-2:amd64 (2.1.28+dfsg-10) ...
+Setting up libssh2-1:amd64 (1.10.0-3+b1) ...
+Setting up libldap-2.5-0:amd64 (2.5.13+dfsg-5) ...
+Setting up libcurl4:amd64 (7.88.1-10+deb12u12) ...
+Setting up curl (7.88.1-10+deb12u12) ...
+Processing triggers for libc-bin (2.36-9+deb12u10) ...
+[36mINFO[0m[0039] Taking snapshot of full filesystem...        
+[36mINFO[0m[0040] WORKDIR /usr/local/app                       
+[36mINFO[0m[0040] Cmd: workdir                                 
+[36mINFO[0m[0040] Changed working directory to /usr/local/app  
+[36mINFO[0m[0040] Creating directory /usr/local/app with uid -1 and gid -1 
+[36mINFO[0m[0040] Taking snapshot of files...                  
+[36mINFO[0m[0040] COPY requirements.txt ./requirements.txt     
+[36mINFO[0m[0040] Taking snapshot of files...                  
+[36mINFO[0m[0040] RUN pip install --no-cache-dir -r requirements.txt 
+[36mINFO[0m[0040] Cmd: /bin/sh                                 
+[36mINFO[0m[0040] Args: [-c pip install --no-cache-dir -r requirements.txt] 
+[36mINFO[0m[0040] Running: [/bin/sh -c pip install --no-cache-dir -r requirements.txt] 
+Collecting Flask (from -r requirements.txt (line 1))
+  Downloading flask-3.1.1-py3-none-any.whl.metadata (3.0 kB)
+Collecting Redis (from -r requirements.txt (line 2))
+  Downloading redis-6.2.0-py3-none-any.whl.metadata (10 kB)
+Collecting gunicorn (from -r requirements.txt (line 3))
+  Downloading gunicorn-23.0.0-py3-none-any.whl.metadata (4.4 kB)
+Collecting prometheus-client==0.17.1 (from -r requirements.txt (line 4))
+  Downloading prometheus_client-0.17.1-py3-none-any.whl.metadata (24 kB)
+Collecting python-json-logger (from -r requirements.txt (line 5))
+  Downloading python_json_logger-3.3.0-py3-none-any.whl.metadata (4.0 kB)
+Collecting blinker>=1.9.0 (from Flask->-r requirements.txt (line 1))
+  Downloading blinker-1.9.0-py3-none-any.whl.metadata (1.6 kB)
+Collecting click>=8.1.3 (from Flask->-r requirements.txt (line 1))
+  Downloading click-8.2.1-py3-none-any.whl.metadata (2.5 kB)
+Collecting itsdangerous>=2.2.0 (from Flask->-r requirements.txt (line 1))
+  Downloading itsdangerous-2.2.0-py3-none-any.whl.metadata (1.9 kB)
+Collecting jinja2>=3.1.2 (from Flask->-r requirements.txt (line 1))
+  Downloading jinja2-3.1.6-py3-none-any.whl.metadata (2.9 kB)
+Collecting markupsafe>=2.1.1 (from Flask->-r requirements.txt (line 1))
+  Downloading MarkupSafe-3.0.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.0 kB)
+Collecting werkzeug>=3.1.0 (from Flask->-r requirements.txt (line 1))
+  Downloading werkzeug-3.1.3-py3-none-any.whl.metadata (3.7 kB)
+Collecting packaging (from gunicorn->-r requirements.txt (line 3))
+  Downloading packaging-25.0-py3-none-any.whl.metadata (3.3 kB)
+Downloading prometheus_client-0.17.1-py3-none-any.whl (60 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 60.6/60.6 kB 807.7 kB/s eta 0:00:00
+Downloading flask-3.1.1-py3-none-any.whl (103 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 103.3/103.3 kB 2.7 MB/s eta 0:00:00
+Downloading redis-6.2.0-py3-none-any.whl (278 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 278.7/278.7 kB 2.6 MB/s eta 0:00:00
+Downloading gunicorn-23.0.0-py3-none-any.whl (85 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 85.0/85.0 kB 20.0 MB/s eta 0:00:00
+Downloading python_json_logger-3.3.0-py3-none-any.whl (15 kB)
+Downloading blinker-1.9.0-py3-none-any.whl (8.5 kB)
+Downloading click-8.2.1-py3-none-any.whl (102 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 102.2/102.2 kB 2.3 MB/s eta 0:00:00
+Downloading itsdangerous-2.2.0-py3-none-any.whl (16 kB)
+Downloading jinja2-3.1.6-py3-none-any.whl (134 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 134.9/134.9 kB 9.6 MB/s eta 0:00:00
+Downloading MarkupSafe-3.0.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (23 kB)
+Downloading werkzeug-3.1.3-py3-none-any.whl (224 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 224.5/224.5 kB 6.1 MB/s eta 0:00:00
+Downloading packaging-25.0-py3-none-any.whl (66 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 66.5/66.5 kB 13.2 MB/s eta 0:00:00
+Installing collected packages: Redis, python-json-logger, prometheus-client, packaging, markupsafe, itsdangerous, click, blinker, werkzeug, jinja2, gunicorn, Flask
+Successfully installed Flask-3.1.1 Redis-6.2.0 blinker-1.9.0 click-8.2.1 gunicorn-23.0.0 itsdangerous-2.2.0 jinja2-3.1.6 markupsafe-3.0.2 packaging-25.0 prometheus-client-0.17.1 python-json-logger-3.3.0 werkzeug-3.1.3
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+
+[notice] A new release of pip is available: 24.0 -> 25.1.1
+[notice] To update, run: pip install --upgrade pip
+[36mINFO[0m[0048] Taking snapshot of full filesystem...        
+[36mINFO[0m[0049] Storing source image from stage 0 at path /kaniko/stages/0 
+[36mINFO[0m[0064] Deleting filesystem...                       
+[36mINFO[0m[0064] Base image from previous stage 0 found, using saved tar at path /kaniko/stages/0 
+[36mINFO[0m[0064] Executing 0 build triggers                   
+[36mINFO[0m[0064] Building stage 'base' [idx: '1', base-idx: '0'] 
+[36mINFO[0m[0064] Unpacking rootfs as cmd RUN pip install watchdog requires it. 
+[36mINFO[0m[0066] RUN pip install watchdog                     
+[36mINFO[0m[0066] Initializing snapshotter ...                 
+[36mINFO[0m[0066] Taking snapshot of full filesystem...        
+[36mINFO[0m[0068] Cmd: /bin/sh                                 
+[36mINFO[0m[0068] Args: [-c pip install watchdog]              
+[36mINFO[0m[0068] Running: [/bin/sh -c pip install watchdog]   
+Collecting watchdog
+  Downloading watchdog-6.0.0-py3-none-manylinux2014_x86_64.whl.metadata (44 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 44.3/44.3 kB 855.6 kB/s eta 0:00:00
+Downloading watchdog-6.0.0-py3-none-manylinux2014_x86_64.whl (79 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 79.1/79.1 kB 4.2 MB/s eta 0:00:00
+Installing collected packages: watchdog
+Successfully installed watchdog-6.0.0
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+
+[notice] A new release of pip is available: 24.0 -> 25.1.1
+[notice] To update, run: pip install --upgrade pip
+[36mINFO[0m[0070] Taking snapshot of full filesystem...        
+[36mINFO[0m[0070] ENV FLASK_ENV=development                    
+[36mINFO[0m[0070] CMD ["python", "app.py"]                     
+[36mINFO[0m[0070] Deleting filesystem...                       
+[36mINFO[0m[0070] Base image from previous stage 0 found, using saved tar at path /kaniko/stages/0 
+[36mINFO[0m[0070] Executing 0 build triggers                   
+[36mINFO[0m[0070] Building stage 'base' [idx: '2', base-idx: '0'] 
+[36mINFO[0m[0070] Unpacking rootfs as cmd COPY . . requires it. 
+[36mINFO[0m[0073] COPY . .                                     
+[36mINFO[0m[0073] Taking snapshot of files...                  
+[36mINFO[0m[0073] EXPOSE 80                                    
+[36mINFO[0m[0073] Cmd: EXPOSE                                  
+[36mINFO[0m[0073] Adding exposed port: 80/tcp                  
+[36mINFO[0m[0073] CMD ["gunicorn", "app:app", "-b", "0.0.0.0:80", "--log-file", "-", "--access-logfile", "-", "--workers", "4", "--keep-alive", "0"] 
+[36mINFO[0m[0073] Pushing image to quang47/example-voting-app_vote:07b8b97a 
+[36mINFO[0m[0113] Pushed index.docker.io/quang47/example-voting-app_vote@sha256:0367761cb937719702d0cd1585b1f752ebe0b56aad764c22aae287d476b01b33 
+[Pipeline] echo
+Building image quang47/example-voting-app_result:07b8b97a from /workspace/source-repo/app/result/Dockerfile
+[Pipeline] sh
++ /kaniko/executor '--dockerfile=/workspace/source-repo/app/result/Dockerfile' '--context=/workspace/source-repo/app/result' '--destination=quang47/example-voting-app_result:07b8b97a' '--verbosity=info'
+[36mINFO[0m[0003] Using dockerignore file: /workspace/source-repo/app/result/.dockerignore 
+[36mINFO[0m[0003] Retrieving image manifest node:18-slim       
+[36mINFO[0m[0003] Retrieving image node:18-slim from registry index.docker.io 
+[36mINFO[0m[0006] Built cross stage deps: map[]                
+[36mINFO[0m[0006] Retrieving image manifest node:18-slim       
+[36mINFO[0m[0006] Returning cached image manifest              
+[36mINFO[0m[0006] Executing 0 build triggers                   
+[36mINFO[0m[0006] Building stage 'node:18-slim' [idx: '0', base-idx: '-1'] 
+[36mINFO[0m[0006] Unpacking rootfs as cmd RUN apt-get update &&     apt-get install -y --no-install-recommends curl tini &&     rm -rf /var/lib/apt/lists/* requires it. 
+[36mINFO[0m[0028] RUN apt-get update &&     apt-get install -y --no-install-recommends curl tini &&     rm -rf /var/lib/apt/lists/* 
+[36mINFO[0m[0028] Initializing snapshotter ...                 
+[36mINFO[0m[0028] Taking snapshot of full filesystem...        
+[36mINFO[0m[0030] Cmd: /bin/sh                                 
+[36mINFO[0m[0030] Args: [-c apt-get update &&     apt-get install -y --no-install-recommends curl tini &&     rm -rf /var/lib/apt/lists/*] 
+[36mINFO[0m[0030] Running: [/bin/sh -c apt-get update &&     apt-get install -y --no-install-recommends curl tini &&     rm -rf /var/lib/apt/lists/*] 
+Get:1 http://deb.debian.org/debian bookworm InRelease [151 kB]
+Get:2 http://deb.debian.org/debian bookworm-updates InRelease [55.4 kB]
+Get:3 http://deb.debian.org/debian-security bookworm-security InRelease [48.0 kB]
+Get:4 http://deb.debian.org/debian bookworm/main amd64 Packages [8793 kB]
+Get:5 http://deb.debian.org/debian bookworm-updates/main amd64 Packages [756 B]
+Get:6 http://deb.debian.org/debian-security bookworm-security/main amd64 Packages [268 kB]
+Fetched 9316 kB in 5s (2063 kB/s)
+Reading package lists...
+Reading package lists...
+Building dependency tree...
+Reading state information...
+The following additional packages will be installed:
+  libbrotli1 libcurl4 libgssapi-krb5-2 libk5crypto3 libkeyutils1 libkrb5-3
+  libkrb5support0 libldap-2.5-0 libnghttp2-14 libpsl5 librtmp1 libsasl2-2
+  libsasl2-modules-db libssh2-1 libssl3
+Suggested packages:
+  krb5-doc krb5-user
+Recommended packages:
+  ca-certificates krb5-locales libldap-common publicsuffix libsasl2-modules
+The following NEW packages will be installed:
+  curl libbrotli1 libcurl4 libgssapi-krb5-2 libk5crypto3 libkeyutils1
+  libkrb5-3 libkrb5support0 libldap-2.5-0 libnghttp2-14 libpsl5 librtmp1
+  libsasl2-2 libsasl2-modules-db libssh2-1 libssl3 tini
+0 upgraded, 17 newly installed, 0 to remove and 2 not upgraded.
+Need to get 4485 kB of archives.
+After this operation, 12.7 MB of additional disk space will be used.
+Get:1 http://deb.debian.org/debian bookworm/main amd64 libbrotli1 amd64 1.0.9-2+b6 [275 kB]
+Get:2 http://deb.debian.org/debian bookworm/main amd64 libkrb5support0 amd64 1.20.1-2+deb12u3 [32.8 kB]
+Get:3 http://deb.debian.org/debian bookworm/main amd64 libk5crypto3 amd64 1.20.1-2+deb12u3 [78.9 kB]
+Get:4 http://deb.debian.org/debian bookworm/main amd64 libkeyutils1 amd64 1.6.3-2 [8808 B]
+Get:5 http://deb.debian.org/debian bookworm/main amd64 libssl3 amd64 3.0.16-1~deb12u1 [2026 kB]
+Get:6 http://deb.debian.org/debian bookworm/main amd64 libkrb5-3 amd64 1.20.1-2+deb12u3 [332 kB]
+Get:7 http://deb.debian.org/debian bookworm/main amd64 libgssapi-krb5-2 amd64 1.20.1-2+deb12u3 [135 kB]
+Get:8 http://deb.debian.org/debian bookworm/main amd64 libsasl2-modules-db amd64 2.1.28+dfsg-10 [20.3 kB]
+Get:9 http://deb.debian.org/debian bookworm/main amd64 libsasl2-2 amd64 2.1.28+dfsg-10 [59.7 kB]
+Get:10 http://deb.debian.org/debian bookworm/main amd64 libldap-2.5-0 amd64 2.5.13+dfsg-5 [183 kB]
+Get:11 http://deb.debian.org/debian bookworm/main amd64 libnghttp2-14 amd64 1.52.0-1+deb12u2 [73.0 kB]
+Get:12 http://deb.debian.org/debian bookworm/main amd64 libpsl5 amd64 0.21.2-1 [58.7 kB]
+Get:13 http://deb.debian.org/debian bookworm/main amd64 librtmp1 amd64 2.4+20151223.gitfa8646d.1-2+b2 [60.8 kB]
+Get:14 http://deb.debian.org/debian bookworm/main amd64 libssh2-1 amd64 1.10.0-3+b1 [179 kB]
+Get:15 http://deb.debian.org/debian bookworm/main amd64 libcurl4 amd64 7.88.1-10+deb12u12 [391 kB]
+Get:16 http://deb.debian.org/debian bookworm/main amd64 curl amd64 7.88.1-10+deb12u12 [315 kB]
+Get:17 http://deb.debian.org/debian bookworm/main amd64 tini amd64 0.19.0-1 [255 kB]
+debconf: delaying package configuration, since apt-utils is not installed
+Fetched 4485 kB in 2s (2822 kB/s)
+Selecting previously unselected package libbrotli1:amd64.
+(Reading database ... 
+(Reading database ... 5%
+(Reading database ... 10%
+(Reading database ... 15%
+(Reading database ... 20%
+(Reading database ... 25%
+(Reading database ... 30%
+(Reading database ... 35%
+(Reading database ... 40%
+(Reading database ... 45%
+(Reading database ... 50%
+(Reading database ... 55%
+(Reading database ... 60%
+(Reading database ... 65%
+(Reading database ... 70%
+(Reading database ... 75%
+(Reading database ... 80%
+(Reading database ... 85%
+(Reading database ... 90%
+(Reading database ... 95%
+(Reading database ... 100%
+(Reading database ... 6089 files and directories currently installed.)
+Preparing to unpack .../00-libbrotli1_1.0.9-2+b6_amd64.deb ...
+Unpacking libbrotli1:amd64 (1.0.9-2+b6) ...
+Selecting previously unselected package libkrb5support0:amd64.
+Preparing to unpack .../01-libkrb5support0_1.20.1-2+deb12u3_amd64.deb ...
+Unpacking libkrb5support0:amd64 (1.20.1-2+deb12u3) ...
+Selecting previously unselected package libk5crypto3:amd64.
+Preparing to unpack .../02-libk5crypto3_1.20.1-2+deb12u3_amd64.deb ...
+Unpacking libk5crypto3:amd64 (1.20.1-2+deb12u3) ...
+Selecting previously unselected package libkeyutils1:amd64.
+Preparing to unpack .../03-libkeyutils1_1.6.3-2_amd64.deb ...
+Unpacking libkeyutils1:amd64 (1.6.3-2) ...
+Selecting previously unselected package libssl3:amd64.
+Preparing to unpack .../04-libssl3_3.0.16-1~deb12u1_amd64.deb ...
+Unpacking libssl3:amd64 (3.0.16-1~deb12u1) ...
+Selecting previously unselected package libkrb5-3:amd64.
+Preparing to unpack .../05-libkrb5-3_1.20.1-2+deb12u3_amd64.deb ...
+Unpacking libkrb5-3:amd64 (1.20.1-2+deb12u3) ...
+Selecting previously unselected package libgssapi-krb5-2:amd64.
+Preparing to unpack .../06-libgssapi-krb5-2_1.20.1-2+deb12u3_amd64.deb ...
+Unpacking libgssapi-krb5-2:amd64 (1.20.1-2+deb12u3) ...
+Selecting previously unselected package libsasl2-modules-db:amd64.
+Preparing to unpack .../07-libsasl2-modules-db_2.1.28+dfsg-10_amd64.deb ...
+Unpacking libsasl2-modules-db:amd64 (2.1.28+dfsg-10) ...
+Selecting previously unselected package libsasl2-2:amd64.
+Preparing to unpack .../08-libsasl2-2_2.1.28+dfsg-10_amd64.deb ...
+Unpacking libsasl2-2:amd64 (2.1.28+dfsg-10) ...
+Selecting previously unselected package libldap-2.5-0:amd64.
+Preparing to unpack .../09-libldap-2.5-0_2.5.13+dfsg-5_amd64.deb ...
+Unpacking libldap-2.5-0:amd64 (2.5.13+dfsg-5) ...
+Selecting previously unselected package libnghttp2-14:amd64.
+Preparing to unpack .../10-libnghttp2-14_1.52.0-1+deb12u2_amd64.deb ...
+Unpacking libnghttp2-14:amd64 (1.52.0-1+deb12u2) ...
+Selecting previously unselected package libpsl5:amd64.
+Preparing to unpack .../11-libpsl5_0.21.2-1_amd64.deb ...
+Unpacking libpsl5:amd64 (0.21.2-1) ...
+Selecting previously unselected package librtmp1:amd64.
+Preparing to unpack .../12-librtmp1_2.4+20151223.gitfa8646d.1-2+b2_amd64.deb ...
+Unpacking librtmp1:amd64 (2.4+20151223.gitfa8646d.1-2+b2) ...
+Selecting previously unselected package libssh2-1:amd64.
+Preparing to unpack .../13-libssh2-1_1.10.0-3+b1_amd64.deb ...
+Unpacking libssh2-1:amd64 (1.10.0-3+b1) ...
+Selecting previously unselected package libcurl4:amd64.
+Preparing to unpack .../14-libcurl4_7.88.1-10+deb12u12_amd64.deb ...
+Unpacking libcurl4:amd64 (7.88.1-10+deb12u12) ...
+Selecting previously unselected package curl.
+Preparing to unpack .../15-curl_7.88.1-10+deb12u12_amd64.deb ...
+Unpacking curl (7.88.1-10+deb12u12) ...
+Selecting previously unselected package tini.
+Preparing to unpack .../16-tini_0.19.0-1_amd64.deb ...
+Unpacking tini (0.19.0-1) ...
+Setting up libkeyutils1:amd64 (1.6.3-2) ...
+Setting up libpsl5:amd64 (0.21.2-1) ...
+Setting up libbrotli1:amd64 (1.0.9-2+b6) ...
+Setting up libssl3:amd64 (3.0.16-1~deb12u1) ...
+Setting up libnghttp2-14:amd64 (1.52.0-1+deb12u2) ...
+Setting up libkrb5support0:amd64 (1.20.1-2+deb12u3) ...
+Setting up libsasl2-modules-db:amd64 (2.1.28+dfsg-10) ...
+Setting up librtmp1:amd64 (2.4+20151223.gitfa8646d.1-2+b2) ...
+Setting up tini (0.19.0-1) ...
+Setting up libk5crypto3:amd64 (1.20.1-2+deb12u3) ...
+Setting up libsasl2-2:amd64 (2.1.28+dfsg-10) ...
+Setting up libssh2-1:amd64 (1.10.0-3+b1) ...
+Setting up libkrb5-3:amd64 (1.20.1-2+deb12u3) ...
+Setting up libldap-2.5-0:amd64 (2.5.13+dfsg-5) ...
+Setting up libgssapi-krb5-2:amd64 (1.20.1-2+deb12u3) ...
+Setting up libcurl4:amd64 (7.88.1-10+deb12u12) ...
+Setting up curl (7.88.1-10+deb12u12) ...
+Processing triggers for libc-bin (2.36-9+deb12u10) ...
+[36mINFO[0m[0039] Taking snapshot of full filesystem...        
+[36mINFO[0m[0040] WORKDIR /usr/local/app                       
+[36mINFO[0m[0040] Cmd: workdir                                 
+[36mINFO[0m[0040] Changed working directory to /usr/local/app  
+[36mINFO[0m[0040] No files changed in this command, skipping snapshotting. 
+[36mINFO[0m[0040] RUN npm install -g nodemon                   
+[36mINFO[0m[0040] Cmd: /bin/sh                                 
+[36mINFO[0m[0040] Args: [-c npm install -g nodemon]            
+[36mINFO[0m[0040] Running: [/bin/sh -c npm install -g nodemon] 
+
+added 29 packages in 5s
+
+4 packages are looking for funding
+  run `npm fund` for details
+npm notice
+npm notice New major version of npm available! 10.8.2 -> 11.4.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.4.2
+npm notice To update run: npm install -g npm@11.4.2
+npm notice
+[36mINFO[0m[0045] Taking snapshot of full filesystem...        
+[36mINFO[0m[0046] Resolving srcs [package*.json]...            
+[36mINFO[0m[0046] COPY package*.json ./                        
+[36mINFO[0m[0046] Resolving srcs [package*.json]...            
+[36mINFO[0m[0046] Taking snapshot of files...                  
+[36mINFO[0m[0046] RUN npm ci &&  npm cache clean --force &&  mv /usr/local/app/node_modules /node_modules 
+[36mINFO[0m[0046] Cmd: /bin/sh                                 
+[36mINFO[0m[0046] Args: [-c npm ci &&  npm cache clean --force &&  mv /usr/local/app/node_modules /node_modules] 
+[36mINFO[0m[0046] Running: [/bin/sh -c npm ci &&  npm cache clean --force &&  mv /usr/local/app/node_modules /node_modules] 
+
+added 116 packages, and audited 117 packages in 4s
+
+9 packages are looking for funding
+  run `npm fund` for details
+
+11 vulnerabilities (5 low, 6 high)
+
+To address all issues, run:
+  npm audit fix
+
+Run `npm audit` for details.
+npm warn using --force Recommended protections disabled.
+[36mINFO[0m[0050] Taking snapshot of full filesystem...        
+[36mINFO[0m[0051] COPY . .                                     
+[36mINFO[0m[0051] Taking snapshot of files...                  
+[36mINFO[0m[0051] ENV PORT=80                                  
+[36mINFO[0m[0051] EXPOSE 80                                    
+[36mINFO[0m[0051] Cmd: EXPOSE                                  
+[36mINFO[0m[0051] Adding exposed port: 80/tcp                  
+[36mINFO[0m[0051] ENTRYPOINT ["/usr/bin/tini", "--"]           
+[36mINFO[0m[0051] CMD ["node", "server.js"]                    
+[36mINFO[0m[0051] Pushing image to quang47/example-voting-app_result:07b8b97a 
+[36mINFO[0m[0078] Pushed index.docker.io/quang47/example-voting-app_result@sha256:e6c371f478bc9007438c5db36493372b8f743f688c6d37c0bdca1ccc2ab1268e 
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // container
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Update K8s Manifests)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] withCredentials
+Masking supported pattern matches of $GIT_PASS
+[Pipeline] {
+[Pipeline] container
+[Pipeline] {
+[Pipeline] echo
+Cloning manifest repo...
+[Pipeline] sh
+Warning: A secret was passed to "sh" using Groovy String interpolation, which is insecure.
+		 Affected argument(s) used the following variable(s): [GIT_PASS]
+		 See https://jenkins.io/redirect/groovy-string-interpolation for details.
++ git clone -b main https://duyquang47:****@github.com/duyquang47/VDT2025-CD.git /workspace/config-repo
+Cloning into '/workspace/config-repo'...
+[Pipeline] }
+[Pipeline] // container
+[Pipeline] container
+[Pipeline] {
+[Pipeline] dir
+Running in /workspace/config-repo
+[Pipeline] {
+[Pipeline] echo
+Updating helm/values.yaml with yq...
+[Pipeline] echo
+Updating vote -> image: quang47/example-voting-app_vote, tag: 07b8b97a
+[Pipeline] sh
++ yq e -i '.vote.image = "quang47/example-voting-app_vote"' helm/values.yaml
+[Pipeline] sh
++ yq e -i '.vote.tag = "07b8b97a"' helm/values.yaml
+[Pipeline] echo
+Updating result -> image: quang47/example-voting-app_result, tag: 07b8b97a
+[Pipeline] sh
++ yq e -i '.result.image = "quang47/example-voting-app_result"' helm/values.yaml
+[Pipeline] sh
++ yq e -i '.result.tag = "07b8b97a"' helm/values.yaml
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // container
+[Pipeline] container
+[Pipeline] {
+[Pipeline] dir
+Running in /workspace/config-repo
+[Pipeline] {
+[Pipeline] echo
+Committing and pushing changes...
+[Pipeline] sh
++ git config user.email jenkins-ci-bot@example.com
+[Pipeline] sh
++ git config user.name 'Jenkins CI Bot'
+[Pipeline] sh
+Warning: A secret was passed to "sh" using Groovy String interpolation, which is insecure.
+		 Affected argument(s) used the following variable(s): [GIT_PASS]
+		 See https://jenkins.io/redirect/groovy-string-interpolation for details.
++ git diff --quiet helm/values.yaml
++ git add helm/values.yaml
++ git commit -m 'CI: Update image tags to 07b8b97a'
+[main affcfff] CI: Update image tags to 07b8b97a
+ 1 file changed, 2 insertions(+), 2 deletions(-)
++ git push https://duyquang47:****@github.com/duyquang47/VDT2025-CD.git HEAD:main
+To https://github.com/duyquang47/VDT2025-CD.git
+   a21989e..affcfff  HEAD -> main
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // container
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] echo
+Clean workspaces.
+[Pipeline] cleanWs
+[WS-CLEANUP] Deleting project workspace...
+[WS-CLEANUP] Deferred wipeout is used...
+[WS-CLEANUP] done
+[Pipeline] echo
+Pipeline completed successfully! Build #67
+[Pipeline] echo
+Git commit: 07b8b97a
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] }
+[Pipeline] // podTemplate
+[Pipeline] End of Pipeline
+Finished: SUCCESS
