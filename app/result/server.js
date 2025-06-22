@@ -4,9 +4,21 @@ var express = require('express'),
     cookieParser = require('cookie-parser'),
     app = express(),
     server = require('http').Server(app),
-    io = require('socket.io')(server);
+    io = require('socket.io')(server),
+    promClient = require('prom-client');
 
 var port = process.env.PORT || 4000;
+
+// Prometheus metrics
+const register = promClient.register;
+promClient.collectDefaultMetrics({ register });
+
+// Vote count metric
+const voteCounts = new promClient.Gauge({
+  name: 'result_vote_counts',
+  help: 'Current vote counts by option',
+  labelNames: ['vote_option']
+});
 
 io.on('connection', function (socket) {
 
@@ -47,6 +59,10 @@ function getVotes(client) {
     } else {
       var votes = collectVotesFromResult(result);
       io.sockets.emit("scores", JSON.stringify(votes));
+      
+      // Update vote count metrics
+      voteCounts.labels('a').set(votes.a || 0);
+      voteCounts.labels('b').set(votes.b || 0);
     }
 
     setTimeout(function() {getVotes(client) }, 1000);
@@ -68,7 +84,17 @@ app.use(express.urlencoded());
 app.use(express.static(__dirname + '/views'));
 
 app.get('/', function (req, res) {
-  res.sendFile(path.resolve(__dirname + '/views/index.html'));
+  res.sendFile(require('path').resolve(__dirname + '/views/index.html'));
+});
+
+// Prometheus metrics endpoint
+app.get('/metrics', async (req, res) => {
+  try {
+    res.set('Content-Type', register.contentType);
+    res.end(await register.metrics());
+  } catch (err) {
+    res.status(500).end(err);
+  }
 });
 
 server.listen(port, function () {

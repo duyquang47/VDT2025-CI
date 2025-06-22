@@ -5,6 +5,7 @@ import socket
 import random
 import json
 import logging
+from prometheus_client import Counter, generate_latest, CONTENT_TYPE_LATEST
 
 option_a = os.getenv('OPTION_A', "Boys")
 option_b = os.getenv('OPTION_B', "Girls")
@@ -15,6 +16,9 @@ app = Flask(__name__)
 gunicorn_error_logger = logging.getLogger('gunicorn.error')
 app.logger.handlers.extend(gunicorn_error_logger.handlers)
 app.logger.setLevel(logging.INFO)
+
+# Vote count metric
+VOTE_COUNT = Counter('vote_votes_total', 'Total votes cast', ['vote_option'])
 
 def get_redis():
     if not hasattr(g, 'redis'):
@@ -35,6 +39,9 @@ def hello():
         app.logger.info('Received vote for %s', vote)
         data = json.dumps({'voter_id': voter_id, 'vote': vote})
         redis.rpush('votes', data)
+        
+        # Record vote metric
+        VOTE_COUNT.labels(vote_option=vote).inc()
 
     resp = make_response(render_template(
         'index.html',
@@ -46,6 +53,9 @@ def hello():
     resp.set_cookie('voter_id', voter_id)
     return resp
 
+@app.route("/metrics")
+def metrics():
+    return generate_latest(), 200, {'Content-Type': CONTENT_TYPE_LATEST}
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=80, debug=True, threaded=True)

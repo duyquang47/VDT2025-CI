@@ -1,3 +1,4 @@
-Flask
-Redis
-gunicorn
+Flask==2.0.1
+Redis==4.0.2
+gunicorn==20.1.0
+prometheus-client==0.17.1
