@@ -48,6 +48,17 @@ spec:
     - name: "workspace-volume"
       mountPath: "/workspace" 
 
+  - name: yq
+    image: mikefarah/yq:4.43.1
+    command: ["sleep"]
+    args: ["999999"]
+    securityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+    volumeMounts:
+    - name: workspace-volume
+      mountPath: /workspace 
+
   volumes:
   - name: kaniko-secret
     secret:

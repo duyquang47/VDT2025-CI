@@ -75,50 +75,66 @@ pipeline {
       }
     }
 
-    stage('Update K8s Manifests') {
-      steps {
-        container('git') {
-          script {
+  stage('Update K8s Manifests') {
+    steps {
+      // BƯỚC 1: DÙNG CONTAINER 'git' ĐỂ CLONE REPO
+      container('git') {
+        script {
             echo "Cloning manifest repo..."
             withCredentials([usernamePassword(
-              credentialsId: GIT_CONFIG_REPO_CREDENTIALS_ID,
-              usernameVariable: 'GIT_USER',
-              passwordVariable: 'GIT_PASS'
+                credentialsId: GIT_CONFIG_REPO_CREDENTIALS_ID,
+                usernameVariable: 'GIT_USER',
+                passwordVariable: 'GIT_PASS'
             )]) {
-              sh "git clone -b main https://${GIT_USER}:${GIT_PASS}@github.com/duyquang47/VDT2025-CD.git /workspace/config-repo"
+              sh "git clone -b main ${GIT_CONFIG_REPO_URL} /workspace/config-repo"
+            }
+          }
+        }
 
-              dir('/workspace/config-repo') {
-                echo "Đang cập nhật image tag..."
-                sh 'apk add --no-cache yq'
+      // BƯỚC 2: DÙNG CONTAINER 'yq' ĐỂ SỬA FILE YAML
+      container('yq') {
+        script {
+          dir('/workspace/config-repo') {
+            echo "Updating helm/values.yaml with yq..."
+            def services = ['vote', 'result']
+            def valueFile = "helm/values.yaml"
 
-                def services = ['vote', 'result']
-                // def services = ['vote']
-                
-                services.each { service ->
-                  def valueFile = "helm/values.yaml"
-                  def imageName = "${DOCKERHUB_USERNAME}/example-voting-app_${service}:${env.GIT_COMMIT_SHORT}"
-                  def imageTag = "${env.GIT_COMMIT_SHORT}"
-
-                  echo "Updating ${service} with image ${imageName}..."
-  
-                  sh "yq e -i '.${service}.image = \"${imageName}\"' ${valueFile}"
-                  sh "yq e -i '.${service}.tag = \"${imageTag}\"' ${valueFile}"
-                }
-
-                sh "git config user.email 'jenkins@example.com'"
-                sh "git config user.name 'Jenkins CI'"
-
-                sh "git add ${valueFile}"
-                sh "git commit -m 'Update image tag: ${env.GIT_COMMIT_SHORT}'"
-                sh "git push https://${GIT_USER}:${GIT_PASS}@github.com/duyquang47/VDT2025-CD.git HEAD:main"
-              }
+            services.each { service ->
+              def imageNameOnly = "${DOCKERHUB_USERNAME}/example-voting-app_${service}"
+              def imageTag = env.GIT_COMMIT_SHORT
+              
+              echo "Updating ${service} -> image: ${imageNameOnly}, tag: ${imageTag}"
+              
+              // Lệnh yq giờ sẽ chạy trong container 'yq'
+              sh "yq e -i '.${service}.image = \"${imageNameOnly}\"' ${valueFile}"
+              sh "yq e -i '.${service}.tag = \"${imageTag}\"' ${valueFile}"
+            }
+          }
+        }
+      }
+          
+      // BƯỚC 3: DÙNG LẠI CONTAINER 'git' ĐỂ COMMIT VÀ PUSH
+      container('git') {
+        script {
+          dir('/workspace/config-repo') {
+            echo "Committing and pushing changes..."
+            sh "git config user.email 'jenkins-ci-bot@example.com'"
+            sh "git config user.name 'Jenkins CI Bot'"
+            sh """
+            if ! git diff --quiet helm/values.yaml; then
+                git add helm/values.yaml
+                git commit -m "CI: Update image tags to ${env.GIT_COMMIT_SHORT}"
+                git push https://${GIT_USER}:${GIT_PASS}@github.com/duyquang47/VDT2025-CD.git HEAD:main
+            else
+                echo "No changes detected. Skipping commit."
+            fi
+            """
             }
           }
         }
       }
     }
   }
-
   post {
     success {
       echo "Pipeline completed successfully! Build #${env.BUILD_NUMBER}"
