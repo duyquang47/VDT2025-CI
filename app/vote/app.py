@@ -31,6 +31,7 @@ def log_request_info(response):
             'response_code': response.status_code
         }
     )
+    return response
 
 gunicorn_error_logger = logging.getLogger('gunicorn.error')
 app.logger.handlers.extend(gunicorn_error_logger.handlers)
