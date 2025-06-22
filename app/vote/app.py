@@ -8,8 +8,8 @@ import logging
 from prometheus_client import Counter, generate_latest, CONTENT_TYPE_LATEST
 from pythonjsonlogger import jsonlogger
 
-option_a = os.getenv('OPTION_A', "Boys")
-option_b = os.getenv('OPTION_B', "Girls")
+option_a = os.getenv('OPTION_A', "Dogs")
+option_b = os.getenv('OPTION_B', "Cats")
 hostname = socket.gethostname()
 
 app = Flask(__name__)
