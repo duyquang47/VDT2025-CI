@@ -6,12 +6,31 @@ import random
 import json
 import logging
 from prometheus_client import Counter, generate_latest, CONTENT_TYPE_LATEST
+from pythonjsonlogger import jsonlogger
 
 option_a = os.getenv('OPTION_A', "Boys")
 option_b = os.getenv('OPTION_B', "Girls")
 hostname = socket.gethostname()
 
 app = Flask(__name__)
+
+logger = logging.getLogger("vote-app")
+logger.setLevel(logging.INFO)
+logHandler = logging.StreamHandler()
+formatter = jsonlogger.JsonFormatter('%(asctime)s %(name)s %(levelname)s %(message)s')
+logHandler.setFormatter(formatter)
+logger.addHandler(logHandler)
+
+@app.after_request
+def log_request_info(response):
+    logger.info(
+        "Request handled",
+        extra={
+            'request_path': request.path,
+            'http_method': request.method,
+            'response_code': response.status_code
+        }
+    )
 
 gunicorn_error_logger = logging.getLogger('gunicorn.error')
 app.logger.handlers.extend(gunicorn_error_logger.handlers)

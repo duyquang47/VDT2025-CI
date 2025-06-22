@@ -9,6 +9,19 @@ var express = require('express'),
 
 var port = process.env.PORT || 4000;
 
+// pino logger
+const pino = require('pino');
+const pinoHttp = require('pino-http');
+
+var app = express(),
+    server = require('http').Server(app),
+    io = require('socket.io')(server);
+
+const logger = pino();
+const httpLogger = pinoHttp({ logger });
+
+app.use(httpLogger);
+
 // Prometheus metrics
 const register = promClient.register;
 promClient.collectDefaultMetrics({ register });
