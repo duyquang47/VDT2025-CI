@@ -52,8 +52,7 @@ pipeline {
         // Step 2: Dùng Kaniko build image từ thư mục đã clone
         container('kaniko') {
           script {
-            // def services = ['vote', 'result', 'worker']
-            def services = ['vote']
+            def services = ['vote', 'result']
 
             services.each { service ->
               def imageName = "${DOCKERHUB_USERNAME}/example-voting-app_${service}:${env.GIT_COMMIT_SHORT}"
@@ -75,60 +74,58 @@ pipeline {
       }
     }
 
-  stage('Update K8s Manifests') {
-    steps {
-      // BƯỚC 1: DÙNG CONTAINER 'git' ĐỂ CLONE REPO
-      container('git') {
+    stage('Update K8s Manifests') {
+      steps {
         script {
-            echo "Cloning manifest repo..."
-            withCredentials([usernamePassword(
-                credentialsId: GIT_CONFIG_REPO_CREDENTIALS_ID,
-                usernameVariable: 'GIT_USER',
-                passwordVariable: 'GIT_PASS'
-            )]) {
-              sh "git clone -b main ${GIT_CONFIG_REPO_URL} /workspace/config-repo"
+          // Bọc TẤT CẢ các bước cần credentials trong một khối withCredentials duy nhất
+          withCredentials([usernamePassword(
+              credentialsId: GIT_CONFIG_REPO_CREDENTIALS_ID,
+              usernameVariable: 'GIT_USER',
+              passwordVariable: 'GIT_PASS'
+          )]) {
+
+            // BƯỚC 1: DÙNG CONTAINER 'git' ĐỂ CLONE REPO
+          container('git') {
+              echo "Cloning manifest repo..."
+              sh "git clone -b main https://${GIT_USER}:${GIT_PASS}@github.com/duyquang47/VDT2025-CD.git /workspace/config-repo"
+          }
+
+          // BƯỚC 2: DÙNG CONTAINER 'yq' ĐỂ SỬA FILE YAML
+          container('yq') {
+            dir('/workspace/config-repo') {
+              echo "Updating helm/values.yaml with yq..."
+              def services = ['vote', 'result']
+              def valueFile = "helm/values.yaml"
+
+              services.each { service ->
+                def imageNameOnly = "${DOCKERHUB_USERNAME}/example-voting-app_${service}"
+                def imageTag = env.GIT_COMMIT_SHORT
+                
+                echo "Updating ${service} -> image: ${imageNameOnly}, tag: ${imageTag}"
+                
+                sh "yq e -i '.${service}.image = \"${imageNameOnly}\"' ${valueFile}"
+                sh "yq e -i '.${service}.tag = \"${imageTag}\"' ${valueFile}"
+              }
             }
           }
-        }
-
-      // BƯỚC 2: DÙNG CONTAINER 'yq' ĐỂ SỬA FILE YAML
-      container('yq') {
-        script {
-          dir('/workspace/config-repo') {
-            echo "Updating helm/values.yaml with yq..."
-            def services = ['vote', 'result']
-            def valueFile = "helm/values.yaml"
-
-            services.each { service ->
-              def imageNameOnly = "${DOCKERHUB_USERNAME}/example-voting-app_${service}"
-              def imageTag = env.GIT_COMMIT_SHORT
-              
-              echo "Updating ${service} -> image: ${imageNameOnly}, tag: ${imageTag}"
-              
-              // Lệnh yq giờ sẽ chạy trong container 'yq'
-              sh "yq e -i '.${service}.image = \"${imageNameOnly}\"' ${valueFile}"
-              sh "yq e -i '.${service}.tag = \"${imageTag}\"' ${valueFile}"
-            }
-          }
-        }
-      }
-          
-      // BƯỚC 3: DÙNG LẠI CONTAINER 'git' ĐỂ COMMIT VÀ PUSH
-      container('git') {
-        script {
-          dir('/workspace/config-repo') {
-            echo "Committing and pushing changes..."
-            sh "git config user.email 'jenkins-ci-bot@example.com'"
-            sh "git config user.name 'Jenkins CI Bot'"
-            sh """
-            if ! git diff --quiet helm/values.yaml; then
-                git add helm/values.yaml
-                git commit -m "CI: Update image tags to ${env.GIT_COMMIT_SHORT}"
-                git push https://${GIT_USER}:${GIT_PASS}@github.com/duyquang47/VDT2025-CD.git HEAD:main
-            else
-                echo "No changes detected. Skipping commit."
-            fi
-            """
+            
+          // BƯỚC 3: DÙNG LẠI CONTAINER 'git' ĐỂ COMMIT VÀ PUSH
+          container('git') {
+            dir('/workspace/config-repo') {
+              echo "Committing and pushing changes..."
+              sh "git config user.email 'jenkins-ci-bot@example.com'"
+              sh "git config user.name 'Jenkins CI Bot'"
+              sh """
+              if ! git diff --quiet helm/values.yaml; then
+                  git add helm/values.yaml
+                  git commit -m "CI: Update image tags to ${env.GIT_COMMIT_SHORT}"
+                  # Lệnh push bây giờ đã có thể thấy GIT_USER và GIT_PASS
+                  git push https://${GIT_USER}:${GIT_PASS}@github.com/duyquang47/VDT2025-CD.git HEAD:main
+                else
+                    echo "No changes detected. Skipping commit."
+                fi
+                """
+              }
             }
           }
         }
