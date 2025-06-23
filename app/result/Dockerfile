@@ -19,6 +19,10 @@ RUN npm ci && \
 COPY . .
 
 ENV PORT=80
+# Ensure logs go to stdout/stderr
+ENV NODE_ENV=production
+ENV PINO_LOG_LEVEL=info
+
 EXPOSE 80
 
 ENTRYPOINT ["/usr/bin/tini", "--"]
