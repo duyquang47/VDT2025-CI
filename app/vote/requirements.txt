@@ -3,3 +3,4 @@ Redis
 gunicorn
 prometheus-client==0.17.1
 python-json-logger
+PyJWT
