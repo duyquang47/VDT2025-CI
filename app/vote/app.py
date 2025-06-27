@@ -17,24 +17,14 @@ hostname = socket.gethostname()
 
 app = Flask(__name__)
 
-app.config['SECRET_KEY'] = 'your-very-secret-key-for-jwt'
-users = {
-    "user_test": {
-        "password": "user",
-        "roles": ["user"]
-    },
-    "admin_test": {
-        "password": "admin",
-        "roles": ["admin", "user"]
-    }
-}
-
 logger = logging.getLogger("vote-app")
-logger.setLevel(logging.INFO)
+
 logHandler = logging.StreamHandler()
 formatter = jsonlogger.JsonFormatter('%(asctime)s %(name)s %(levelname)s %(message)s')
 logHandler.setFormatter(formatter)
 logger.addHandler(logHandler)
+app.logger.addHandler(logHandler)
+app.logger.setLevel(logging.INFO)
 
 @app.after_request
 def log_request_info(response):
@@ -60,52 +50,7 @@ def get_redis():
         g.redis = Redis(host="redis", db=0, socket_timeout=5)
     return g.redis
 
-@app.route('/login', methods=['POST'])
-def login():
-    auth = request.authorization
-    if not auth or not auth.username or not auth.password:
-        return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
-
-    user = users.get(auth.username)
-    if not user or user['password'] != auth.password:
-        return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
-
-    token = jwt.encode({
-        'user': auth.username,
-        'roles': user['roles'],
-        'exp': datetime.utcnow() + timedelta(minutes=30)
-    }, app.config['SECRET_KEY'], algorithm="HS256")
-
-    return jsonify({'token': token})
-
-def token_required(required_role=None):
-    def decorator(f):
-        @wraps(f)
-        def decorated(*args, **kwargs):
-            token = None
-            if 'Authorization' in request.headers:
-                token = request.headers['Authorization'].split(" ")[1]
-
-            if not token:
-                return jsonify({'message': 'Token is missing!'}), 403 
-
-            try:
-                data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
-                current_user_roles = data['roles']
-                
-                if required_role and required_role not in current_user_roles:
-                    return jsonify({'message': 'Cannot perform that function!'}), 403
-            except jwt.ExpiredSignatureError:
-                return jsonify({'message': 'Token has expired!'}), 403
-            except jwt.InvalidTokenError:
-                return jsonify({'message': 'Token is invalid!'}), 403
-
-            return f(*args, **kwargs)
-        return decorated
-    return decorator
-
 @app.route("/", methods=['POST','GET'])
-@token_required('user')
 def hello():
     voter_id = request.cookies.get('voter_id')
     if not voter_id:
@@ -133,18 +78,6 @@ def hello():
     resp.set_cookie('voter_id', voter_id)
     return resp
 
-@app.route("/results", methods=['DELETE'])
-@token_required('admin') 
-def clear_results():
-    try:
-        redis = get_redis()
-        redis.delete('votes')
-        app.logger.info("All votes deleted by admin.")
-        return jsonify({"message": "All votes cleared!"}), 200 
-    except Exception as e:
-        app.logger.error(f"Error clearing votes: {e}")
-        return jsonify({"message": "Failed to clear votes"}), 500
-    
 @app.route("/metrics")
 def metrics():
     return generate_latest(), 200, {'Content-Type': CONTENT_TYPE_LATEST}
