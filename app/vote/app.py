@@ -7,9 +7,6 @@ import json
 import logging
 from prometheus_client import Counter, generate_latest, CONTENT_TYPE_LATEST
 from pythonjsonlogger import jsonlogger
-import jwt
-from functools import wraps
-from datetime import datetime, timedelta
 
 option_a = os.getenv('OPTION_A', "Dogs")
 option_b = os.getenv('OPTION_B', "Cats")
